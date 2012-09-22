@@ -15,9 +15,9 @@ namespace BuddyTest
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            this.Gender.ItemsSource = new EnumHelper<UserGender>().AlphabeticalNames;
+            this.Gender.ItemsSource = EnumHelper<UserGender>.GetInstance().AlphabeticalNames;
 
-            this.Status.ItemsSource = new EnumHelper<UserStatus>().AlphabeticalNames;
+            this.Status.ItemsSource = EnumHelper<UserStatus>.GetInstance().AlphabeticalNames;
         }
 
         private void Submit_Tap(object sender, System.Windows.Input.GestureEventArgs e)
@@ -34,9 +34,9 @@ namespace BuddyTest
                 // enable add user in first pivot
             }, "username", "password");*/
 
-            var genderEnum = new EnumHelper<UserGender>().GetValue((string) Gender.SelectedItem);
+            var genderEnum = EnumHelper<UserGender>.GetInstance().GetValue((string)Gender.SelectedItem);
 
-            var statusEnum = new EnumHelper<UserStatus>().GetValue((string) Status.SelectedItem);
+            var statusEnum = EnumHelper<UserStatus>.GetInstance().GetValue((string)Status.SelectedItem);
 
             var asyncResult = client.CreateUserAsync((user, parameters) =>
             {

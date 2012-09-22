@@ -9,11 +9,16 @@ namespace BuddyTest
     {
         private Type enumType;
 
-        public EnumHelper()
+        private EnumHelper()
         {
             this.enumType = typeof(EnumType);
  
             Debug.Assert(this.enumType.IsEnum);
+        }
+
+        public static EnumHelper<EnumType> GetInstance()
+        {
+            return typeof(EnumType).IsEnum ? new EnumHelper<EnumType>() : null;
         }
 
         public IOrderedEnumerable<string> AlphabeticalNames
