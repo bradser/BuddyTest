@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using Microsoft.Phone.Controls;
+﻿using System.Windows;
 using Buddy;
+using Microsoft.Phone.Controls;
 
 namespace BuddyTest
 {
@@ -25,16 +15,9 @@ namespace BuddyTest
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            var x = typeof(UserGender);
+            this.Gender.ItemsSource = new EnumHelper<UserGender>().AlphabeticalNames;
 
-            this.Gender.ItemsSource = this.GetNamesFromEnum(typeof(UserGender));
-
-            this.Status.ItemsSource = this.GetNamesFromEnum(typeof(UserStatus));
-        }
-
-        private IOrderedEnumerable<string> GetNamesFromEnum(Type enumType)
-        {
-            return enumType.GetFields().Where(fi => fi.IsLiteral).Select(fi => fi.Name).OrderBy(name => name);
+            this.Status.ItemsSource = new EnumHelper<UserStatus>().AlphabeticalNames;
         }
 
         private void Submit_Tap(object sender, System.Windows.Input.GestureEventArgs e)
@@ -51,18 +34,15 @@ namespace BuddyTest
                 // enable add user in first pivot
             }, "username", "password");*/
 
-            var genderEnum = this.GetEnumValueFromListPickerItem<UserGender>(Gender);
+            var genderEnum = new EnumHelper<UserGender>().GetValue((string) Gender.SelectedItem);
 
-            var statusEnum = this.GetEnumValueFromListPickerItem<UserStatus>(Gender);
+            var statusEnum = new EnumHelper<UserStatus>().GetValue((string) Status.SelectedItem);
 
-            //client.CreateUserAsync((user, parameters) =>
-            //{
-            //}, Name.Text, Password.Text, genderEnum, int.Parse(Age.Text), Email.Text, statusEnum);       
-        }
+            var asyncResult = client.CreateUserAsync((user, parameters) =>
+            {
+                Deployment.Current.Dispatcher.BeginInvoke(() => { MessageBox.Show("User created"); });
 
-        private EnumType GetEnumValueFromListPickerItem<EnumType>(ListPicker listPicker)
-        {
-            return (EnumType)Enum.Parse(typeof(EnumType), (string)((ListPickerItem)Gender.SelectedItem).Content, false);
+            }, Name.Text, Password.Password, genderEnum, int.Parse(Age.Text), Email.Text, statusEnum);       
         }
     }
 }
