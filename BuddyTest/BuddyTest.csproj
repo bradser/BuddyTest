@@ -86,6 +86,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters.cs" />
     <Compile Include="LoginOrCreateUser.xaml.cs">
       <DependentUpon>LoginOrCreateUser.xaml</DependentUpon>
     </Compile>

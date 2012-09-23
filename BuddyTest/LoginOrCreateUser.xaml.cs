@@ -13,6 +13,8 @@ namespace BuddyTest
     {
         private Settings settings;
 
+        private byte[] chosenPhotoBytes;
+
         public LoginOrCreateUser()
         {
             InitializeComponent();
@@ -58,7 +60,6 @@ namespace BuddyTest
             photoChooserTask.Show();
         }
 
-        private byte[] chosenPhotoBytes;
         void photoChooserTask_Completed(object sender, PhotoResult e)
         {
  	        if (e.TaskResult == TaskResult.OK)
@@ -127,51 +128,83 @@ namespace BuddyTest
         {
             ((App)App.Current).Client.LoginAsync((user, state) =>
             {
-                Debug.WriteLine(user == null ? "LoginAsync null" : "LoginAsync");
-                
-                if (user != null)
-                {
-                    this.NavigateToMain(user);
-                }
+                this.UserCreatedOrLoggedIn(user, () => { this.NavigateToMain(user); }, "Login failed. Please try again."); // TODO: move string to resource
 
             }, this.Name.Text, this.Password.Password);
         }
 
+        private void UserCreatedOrLoggedIn(AuthenticatedUser user, Action action, string errorMessage)
+        {
+            if (user == null)
+            {
+                this.CrossThreadMessageBox(errorMessage);
+            }
+            else
+            {
+                action();
+            }
+        }
+
+        private void CrossThreadMessageBox(string message)
+        {
+            this.CrossThread(() => { MessageBox.Show(message); });
+        }
+
+        private void CrossThread(Action action)
+        {
+            Deployment.Current.Dispatcher.BeginInvoke(() => // Dispatcher for cross-thread access to UI
+            {
+                action();
+            });
+        }
+
         private void CreateUser()
         {
-            var genderEnum = EnumHelper<UserGender>.GetInstance().GetValue((string)this.Gender.SelectedItem);
+            if (string.IsNullOrEmpty(this.Name.Text) || string.IsNullOrEmpty(this.Password.Password))
+            {
+                this.CrossThreadMessageBox("Enter a name and a password.");
+            }
+            else
+            {
+                var genderEnum = EnumHelper<UserGender>.GetInstance().GetValue((string)this.Gender.SelectedItem);
 
-            var statusEnum = EnumHelper<UserStatus>.GetInstance().GetValue((string)this.Status.SelectedItem);
+                var statusEnum = EnumHelper<UserStatus>.GetInstance().GetValue((string)this.Status.SelectedItem);
 
-            this.CreateUser(genderEnum, statusEnum);
+                this.CreateUser(genderEnum, statusEnum);
+            }
         }
 
         private void CreateUser(UserGender gender, UserStatus status)
         {
             ((App)App.Current).Client.CreateUserAsync((user, parameters) =>
             {
-                Debug.WriteLine(user == null ? "CreateUserAsync null" : "CreateUserAsync");
+                this.UserCreatedOrLoggedIn(user, () => { this.UserCreated(user); }, "Create user failed. Please try again."); // TODO: move string to resource
 
-                if (user != null)
-                {
-                    this.UserCreated(user);
-                }
+            }, this.Name.Text, this.Password.Password, gender: gender, age: this.GetAge(),
+            email: this.Email.Text, status: status);
+        }
 
-            }, this.Name.Text, this.Password.Password, gender, int.Parse(this.Age.Text), this.Email.Text, status);
+        private int GetAge()
+        {
+            var age = 0;
+
+            int.TryParse(this.Age.Text, out age);
+
+            return age;
         }
 
         private void UserCreated(AuthenticatedUser user)
         {
             this.SaveSettings();
 
-            this.SavePicture(user);
+            this.SavePhoto(user);
 
             this.NavigateToMain(user);
         }
 
         private void SaveSettings()
         {
-            Deployment.Current.Dispatcher.BeginInvoke(() => // Dispatcher for cross-thread access to UI
+            this.CrossThread(() =>
             { 
                 this.settings.Name = this.Name.Text;
 
@@ -179,20 +212,23 @@ namespace BuddyTest
             });
         }
 
-        private void SavePicture(AuthenticatedUser user)
+        private void SavePhoto(AuthenticatedUser user)
         {
-            Debug.Assert(this.chosenPhotoBytes != null);
-
-            user.AddProfilePhotoAsync((success, parameters) =>
+            if (this.chosenPhotoBytes != null)
             {
-            }, this.chosenPhotoBytes);
+                user.AddProfilePhotoAsync((success, parameters) =>
+                {
+                    // TODO: handle errors
+
+                }, this.chosenPhotoBytes);
+            }
         }
 
         private void NavigateToMain(AuthenticatedUser user)
         {
             ((App)App.Current).User = user;
 
-            Deployment.Current.Dispatcher.BeginInvoke(() => // Dispatcher for cross-thread access to UI
+            this.CrossThread(() =>
             {
                 NavigationService.Navigate(new Uri("/MainPage.xaml", UriKind.Relative));
             });
