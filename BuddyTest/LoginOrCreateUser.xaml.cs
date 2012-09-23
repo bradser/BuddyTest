@@ -31,13 +31,24 @@ namespace BuddyTest
 
         private void SetupAdditionalFields()
         {
-            if (!this.HasName)
+            if (this.HasName)
+            {
+                this.AdditionalFields.Visibility = Visibility.Collapsed;
+            }
+            else
             {
                 this.Gender.ItemsSource = EnumHelper<UserGender>.GetInstance().AlphabeticalNames;
 
                 this.Status.ItemsSource = EnumHelper<UserStatus>.GetInstance().AlphabeticalNames;
 
-                this.AdditionalFields.Visibility = Visibility.Visible;
+            }
+        }
+
+        private bool HasName
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(this.settings.Name);
             }
         }
 
@@ -106,14 +117,6 @@ namespace BuddyTest
             else
             {
                 this.CreateUser();
-            }
-        }
-
-        private bool HasName
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(this.settings.Name);
             }
         }
 

@@ -41,7 +41,7 @@
                 <TextBlock Name="PasswordLabel" Grid.Row="1" Grid.Column="0" Text="Password:" VerticalAlignment="Center"/>
                 <PasswordBox Name="Password" Grid.Row="1" Grid.Column="1" />
             </Grid>
-            <Grid Name="AdditionalFields" Visibility="Visible">
+            <Grid Name="AdditionalFields">
                 <Grid.ColumnDefinitions>
                     <!-- TODO figure out how to bind to ColumnDefinition's width -->
                     <ColumnDefinition Width="{Binding Path=ActualWidth, ElementName=PasswordLabel, Converter={StaticResource DoubleToGridLengthConverterResource}}" />
@@ -63,8 +63,8 @@
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Status:" VerticalAlignment="Center"/>
                 <toolkit:ListPicker Name="Status" Grid.Row="3" Grid.Column="1"></toolkit:ListPicker>
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Photo:" VerticalAlignment="Center"/>
-                <TextBlock Name="EmptyPhoto" Grid.Row="4" Grid.Column="2" Text="Tap here to select picture" VerticalAlignment="Center" HorizontalAlignment="Center" Height="{Binding Path=ActualHeight, ElementName=Email}" Tap="EmptyPhoto_Tap" FontSize="{StaticResource PhoneFontSizeMedium}" />
-                <Image Name="Photo" Grid.Row="4" Grid.Column="2" Height="80" Tap="Photo_Tap" Visibility="Collapsed"></Image>
+                <TextBlock Name="EmptyPhoto" Grid.Row="4" Grid.Column="1" Text="Tap here to select picture" HorizontalAlignment="Center" Height="{Binding Path=ActualHeight, ElementName=Email}" Tap="EmptyPhoto_Tap" VerticalAlignment="Center" FontSize="{StaticResource PhoneFontSizeMedium}" />
+                <Image Name="Photo" Grid.Row="4" Grid.Column="1" Tap="Photo_Tap" Visibility="Collapsed" Height="{Binding Path=ActualHeight, ElementName=Email}" ></Image>
             </Grid>
             <Button Name="Submit" Content="Submit" HorizontalAlignment="Center" Margin="0,10,0,0" Tap="Submit_Tap"></Button>
         </StackPanel>
