@@ -25,12 +25,12 @@ namespace BuddyTest
 
         private void LoginOrCreateUser_Loaded(object sender, RoutedEventArgs e)
         {
-            this.HandleNullClient();
+            //this.HandleNullClient();
             
             this.SetupAdditionalFields();
         }
 
-        private void HandleNullClient()
+        /*private void HandleNullClient()
         {
             if (((App)App.Current).Client == null)
             {
@@ -38,7 +38,7 @@ namespace BuddyTest
 
                 Utilities.CrossThreadMessageBox("Network error. Please restart app.");
             }
-        }
+        }*/
 
         private void SetupAdditionalFields()
         {
@@ -60,7 +60,7 @@ namespace BuddyTest
         {
             get
             {
-                return true; //!string.IsNullOrEmpty(this.settings.Name);
+                return !string.IsNullOrEmpty(this.settings.Name);
             }
         }
 
@@ -147,7 +147,6 @@ namespace BuddyTest
 
             }, this.Name.Text, this.Password.Password);
         }
-
 
         private void CreateUser()
         {
