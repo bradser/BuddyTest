@@ -8,12 +8,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TestHarness
 {
     [TestClass]
-    public class SampleTests : SilverlightTest
+    public class EnumHelperTests : SilverlightTest
     {
         [TestMethod]
-        public void EnumHelperOnlyWorksOnEnums()
+        public void OnlyWorksOnEnums()
         {
-            var emptyEnumHelper = EnumHelper<BuddyClient>.GetInstance();
+            var emptyEnumHelper = EnumHelper<BuddyClient>.GetInstance(); // use any random non-enum type
 
             Assert.IsNull(emptyEnumHelper);
         }
@@ -23,19 +23,26 @@ namespace TestHarness
         {
             var enumHelper = EnumHelper<UserStatus>.GetInstance();
 
-            var firstName = enumHelper.AlphabeticalNames.First();
+            var firstName = enumHelper.AlphabeticalNames.First(); // TODO: use linq to verify each name
 
             Assert.AreEqual(firstName, "Any");
         }
 
         [TestMethod]
-        public void VerifyEnumHelperRoundTripping()
+        public void VerifyRoundTripping()
         {
             var enumHelper = EnumHelper<UserStatus>.GetInstance();
 
-            var roundTripped = enumHelper.Names.Contains(Enum.GetName(typeof(UserStatus), UserStatus.Married));
-
+            var roundTripped = DoRoundTrip(enumHelper, UserStatus.Any);
             Assert.IsTrue(roundTripped);
+
+            roundTripped = DoRoundTrip(enumHelper, UserStatus.Widowed);
+            Assert.IsTrue(roundTripped);
+        }
+
+        private bool DoRoundTrip(EnumHelper<UserStatus> enumHelper, UserStatus status)
+        {
+            return enumHelper.Names.Contains(Enum.GetName(typeof(UserStatus), status));
         }
 
         [TestMethod]

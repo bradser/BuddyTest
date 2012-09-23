@@ -8,7 +8,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768" 
-    d:DataContext="{d:DesignData SampleData/MainViewModelSampleData.xaml}"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -18,43 +17,11 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <!--Pivot Control-->
-        <controls:Pivot Title="MY APPLICATION">
-            <!--Pivot item one-->
-            <controls:PivotItem Header="add user" Name="addUser">
-                <StackPanel>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:" VerticalAlignment="Center" />
-                        <TextBox Name="Name" Grid.Row="0" Grid.Column="1" InputScope="PersonalFullName" />
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Password:" VerticalAlignment="Center"/>
-                        <PasswordBox Name="Password" Grid.Row="1" Grid.Column="1" />
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Gender:" VerticalAlignment="Center"/>
-                        <toolkit:ListPicker Name="Gender" Grid.Row="2" Grid.Column="1"></toolkit:ListPicker>
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Age:" VerticalAlignment="Center"/>
-                        <TextBox Name="Age" Grid.Row="3" Grid.Column="1" InputScope="Digits" />
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Email:" VerticalAlignment="Center"/>
-                        <TextBox Name="Email" Grid.Row="4" Grid.Column="1" InputScope="EmailSmtpAddress" />
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Status:" VerticalAlignment="Center"/>
-                        <toolkit:ListPicker Name="Status" Grid.Row="5" Grid.Column="1"></toolkit:ListPicker>
-                    </Grid>
-                    <Button Name="Submit" Content="Submit" HorizontalAlignment="Center" Margin="0,20,0,0" Tap="Submit_Tap"></Button>
-                </StackPanel>
+        <controls:Pivot Title="buddy test">
+            <controls:PivotItem Header="nearby">
             </controls:PivotItem>
- 
-            <!--Pivot item two-->
-            <controls:PivotItem Header="nearby" Name="nearby"> 
+            
+            <controls:PivotItem Header="map">
             </controls:PivotItem>
         </controls:Pivot>
     </Grid>
