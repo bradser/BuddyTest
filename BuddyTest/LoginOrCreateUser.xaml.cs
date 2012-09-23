@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -26,7 +25,19 @@ namespace BuddyTest
 
         private void LoginOrCreateUser_Loaded(object sender, RoutedEventArgs e)
         {
+            this.HandleNullClient();
+            
             this.SetupAdditionalFields();
+        }
+
+        private void HandleNullClient()
+        {
+            if (((App)App.Current).Client == null)
+            {
+                this.Fields.Visibility = Visibility.Collapsed;
+
+                Utilities.CrossThreadMessageBox("Network error. Please restart app.");
+            }
         }
 
         private void SetupAdditionalFields()
@@ -34,13 +45,14 @@ namespace BuddyTest
             if (this.HasName)
             {
                 this.AdditionalFields.Visibility = Visibility.Collapsed;
+
+                this.Name.Text = this.settings.Name;
             }
             else
             {
                 this.Gender.ItemsSource = EnumHelper<UserGender>.GetInstance().AlphabeticalNames;
 
                 this.Status.ItemsSource = EnumHelper<UserStatus>.GetInstance().AlphabeticalNames;
-
             }
         }
 
@@ -48,7 +60,7 @@ namespace BuddyTest
         {
             get
             {
-                return !string.IsNullOrEmpty(this.settings.Name);
+                return true; //!string.IsNullOrEmpty(this.settings.Name);
             }
         }
 
@@ -129,45 +141,17 @@ namespace BuddyTest
 
         private void LoginUser()
         {
-            ((App)App.Current).Client.LoginAsync((user, state) =>
+            ((App)App.Current).Client.LoginAsync((user, callbackParams) =>
             {
-                this.UserCreatedOrLoggedIn(user, () => { this.NavigateToMain(user); }, "Login failed. Please try again."); // TODO: move string to resource
+                Utilities.HandleAsyncResults(user, callbackParams, () => { this.NavigateToMain(user); }, "Login failed. Please try again."); // TODO: move all strings to resource
 
             }, this.Name.Text, this.Password.Password);
         }
 
-        private void UserCreatedOrLoggedIn(AuthenticatedUser user, Action action, string errorMessage)
-        {
-            if (user == null)
-            {
-                this.CrossThreadMessageBox(errorMessage);
-            }
-            else
-            {
-                action();
-            }
-        }
-
-        private void CrossThreadMessageBox(string message)
-        {
-            this.CrossThread(() => { MessageBox.Show(message); });
-        }
-
-        private void CrossThread(Action action)
-        {
-            Deployment.Current.Dispatcher.BeginInvoke(() => // Dispatcher for cross-thread access to UI
-            {
-                action();
-            });
-        }
 
         private void CreateUser()
         {
-            if (string.IsNullOrEmpty(this.Name.Text) || string.IsNullOrEmpty(this.Password.Password))
-            {
-                this.CrossThreadMessageBox("Enter a name and a password.");
-            }
-            else
+            if (this.ValidateFields())
             {
                 var genderEnum = EnumHelper<UserGender>.GetInstance().GetValue((string)this.Gender.SelectedItem);
 
@@ -177,11 +161,30 @@ namespace BuddyTest
             }
         }
 
+        private bool ValidateFields()
+        {
+            if (string.IsNullOrEmpty(this.Name.Text))
+            {
+                Utilities.CrossThreadMessageBox("Please enter a name.");
+
+                return false;
+            }
+            else
+                if (string.IsNullOrEmpty(this.Password.Password))
+                {
+                    Utilities.CrossThreadMessageBox("Please enter a password.");
+
+                    return false;
+                }
+
+            return true;
+        }
+
         private void CreateUser(UserGender gender, UserStatus status)
         {
-            ((App)App.Current).Client.CreateUserAsync((user, parameters) =>
+            ((App)App.Current).Client.CreateUserAsync((user, callbackParams) =>
             {
-                this.UserCreatedOrLoggedIn(user, () => { this.UserCreated(user); }, "Create user failed. Please try again."); // TODO: move string to resource
+                Utilities.HandleAsyncResults(user, callbackParams, () => { this.UserCreated(user); }, "Create user failed. Please try again.");
 
             }, this.Name.Text, this.Password.Password, gender: gender, age: this.GetAge(),
             email: this.Email.Text, status: status);
@@ -207,7 +210,7 @@ namespace BuddyTest
 
         private void SaveSettings()
         {
-            this.CrossThread(() =>
+            Utilities.CrossThread(() =>
             { 
                 this.settings.Name = this.Name.Text;
 
@@ -231,7 +234,7 @@ namespace BuddyTest
         {
             ((App)App.Current).User = user;
 
-            this.CrossThread(() =>
+            Utilities.CrossThread(() =>
             {
                 NavigationService.Navigate(new Uri("/MainPage.xaml", UriKind.Relative));
             });
