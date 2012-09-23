@@ -37,8 +37,7 @@
             </controls:PivotItem>
             
             <controls:PivotItem Header="map">
-                <!-- ZoomLevel number gotten from http://www.developer.nokia.com/Community/Wiki/index.php?title=Nokia_Maps_API_-_How_to_change_map_zoom_level_and_center_point&ampdiff=160822&ampoldid=prev -->
-                <my:Map Name="Map" CredentialsProvider="AvjfV43cmE1ui9vdPm5h8Ql5bWNONvrWBts5Sd4vTTdKrdXMbMC-U7R59NT5xjiq" ZoomLevel="11" ZoomBarVisibility="Visible">
+                <my:Map Name="Map" CredentialsProvider="AvjfV43cmE1ui9vdPm5h8Ql5bWNONvrWBts5Sd4vTTdKrdXMbMC-U7R59NT5xjiq">
                     <my:MapItemsControl ItemsSource="{Binding}">
                         <my:MapItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -52,7 +51,7 @@
     </Grid>
  
     <phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True" Mode="Minimized">
             <shell:ApplicationBarIconButton Text="Me" IconUri="/appbar.basecircle.rest.png" Click="ApplicationBarIconButton_Click" />
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>

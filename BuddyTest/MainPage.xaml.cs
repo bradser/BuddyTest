@@ -4,6 +4,8 @@ using System.Device.Location;
 using System.Windows;
 using Buddy;
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Controls.Maps;
+using System.Linq;
 
 namespace BuddyTest
 {
@@ -18,22 +20,24 @@ namespace BuddyTest
             this.Loaded += new RoutedEventHandler(this.MainPage_Loaded);
         }
 
+        private bool setMeOnce;
+
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
+            this.setMeOnce = true;
+
             this.InitializeUpdateLocation();
         }
-
-        private GeoCoordinate currentLocation;
 
         private void InitializeUpdateLocation()
         {
             this.updateLocation = LocationTracker.GetInstance(positionChangedArgs =>
             {
-                this.currentLocation = positionChangedArgs.Position.Location;
-                
-                this.UpdatePage(this.currentLocation);
+                var currentLocation = positionChangedArgs.Position.Location;
 
-                this.CheckIn(this.currentLocation);
+                this.UpdatePage(currentLocation);
+
+                this.CheckIn(currentLocation);
             });
         }
 
@@ -56,6 +60,22 @@ namespace BuddyTest
         private void UpdatePage(List<Place> places)
         {
             this.DataContext = places;
+
+            this.SetMeOnce();
+        }
+
+        private void SetMeOnce()
+        {
+            if (this.setMeOnce)
+            {
+                if (this.SetMe())
+                {
+                    this.setMeOnce = false;
+
+                    // TODO: For some reason, we have to manually invalidate; otherwise, the map won't render correctly before user interaction
+                    this.Map.InvalidateMeasure();
+                }
+            }
         }
 
         private void CheckIn(GeoCoordinate coordinate)
@@ -67,11 +87,29 @@ namespace BuddyTest
 
         private void ApplicationBarIconButton_Click(object sender, EventArgs e)
         {
-            if (this.currentLocation != null)
-            {
-                const int cityZoomLevel = 11;
+            this.SetMe();
+        }
 
-                this.Map.SetView(this.currentLocation, cityZoomLevel);
+        private bool SetMe()
+        {
+            var places = this.DataContext as List<Place>;
+
+            if (places != null && places.Count > 0)
+            {
+                // using Linq here is concise, but, other algorithms can be faster I bet
+                var boundingRectangle = new LocationRect(
+                    places.Max((p) => p.Latitude),
+                    places.Min((p) => p.Longitude),
+                    places.Min((p) => p.Latitude),
+                    places.Max((p) => p.Longitude));
+
+                this.Map.SetView(boundingRectangle);
+
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }
