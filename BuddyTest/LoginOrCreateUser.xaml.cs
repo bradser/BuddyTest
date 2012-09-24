@@ -35,12 +35,16 @@ namespace BuddyTest
                 this.AdditionalFields.Visibility = Visibility.Collapsed;
 
                 this.Name.Text = this.settings.Name;
+
+                this.PageTitle.Text = "Login";
             }
             else
             {
                 this.Gender.ItemsSource = EnumHelper<UserGender>.GetInstance().AlphabeticalNames;
 
                 this.Status.ItemsSource = EnumHelper<UserStatus>.GetInstance().AlphabeticalNames;
+
+                this.PageTitle.Text = "Create User";
             }
         }
 

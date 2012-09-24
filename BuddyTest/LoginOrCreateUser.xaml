@@ -26,8 +26,8 @@
         </Grid.RowDefinitions>
 
         <StackPanel Name="Fields" Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock Text="buddy test" Style="{StaticResource PhoneTextNormalStyle}"/>
-            <TextBlock x:Name="PageTitle" Text="Login" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock Text="Buddy Test" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <TextBlock x:Name="PageTitle" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
             <Grid Name="NamePassword">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" x:Name="NamePasswordColumnWidth" />

@@ -22,8 +22,8 @@
     
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <controls:Pivot Title="buddy test">
-            <controls:PivotItem Header="nearby">
+        <controls:Pivot Title="Buddy Test">
+            <controls:PivotItem Header="Nearby">
                 <ListBox ItemsSource="{Binding}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -36,7 +36,7 @@
                 </ListBox>
             </controls:PivotItem>
             
-            <controls:PivotItem Header="map">
+            <controls:PivotItem Header="Map">
                 <my:Map Name="Map" CredentialsProvider="AvjfV43cmE1ui9vdPm5h8Ql5bWNONvrWBts5Sd4vTTdKrdXMbMC-U7R59NT5xjiq">
                     <my:MapItemsControl ItemsSource="{Binding}">
                         <my:MapItemsControl.ItemTemplate>

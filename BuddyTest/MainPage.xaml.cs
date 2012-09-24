@@ -7,6 +7,7 @@ using Buddy;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Controls.Maps;
 using System.Linq;
+using Microsoft.Phone.Shell;
 
 namespace BuddyTest
 {
@@ -67,6 +68,8 @@ namespace BuddyTest
             this.DataContext = places;
 
             this.SetMeOnce();
+
+            this.UpdateLiveTile();
         }
 
 #if DEBUG       
@@ -92,6 +95,37 @@ namespace BuddyTest
             }
         }
 
+        private void UpdateLiveTile()
+        {
+            var tileToFind = ShellTile.ActiveTiles.First();
+
+            if (tileToFind != null)
+            {
+                var newTileData = this.GetNewTileData();
+
+                tileToFind.Update(newTileData);
+            }
+        }
+
+        private StandardTileData GetNewTileData()
+        {
+            return new StandardTileData
+            {
+                BackgroundImage = new Uri("/Background.png", UriKind.Relative),
+
+                BackContent = ((App)App.Current).User.Name,
+
+                Count = this.SafePlaceCount()
+            };
+        }
+
+        private int SafePlaceCount()
+        {
+            var places = this.DataContext as List<Place>;
+
+            return places == null ? 0 : places.Count;
+        }
+
         private void CheckIn(GeoCoordinate coordinate)
         {
             ((App)App.Current).User.CheckInAsync((success, callbackParams) =>
@@ -106,11 +140,11 @@ namespace BuddyTest
 
         private bool SetMe()
         {
-            var places = this.DataContext as List<Place>;
-
-            if (places != null && places.Count > 0)
+            if (this.SafePlaceCount() > 0)
             {
                 Debug.WriteLine("SetMe");
+
+                var places = (List<Place>) this.DataContext;
 
                 // using Linq here is concise, but, other algorithms can be faster I bet
                 var boundingRectangle = new LocationRect(
