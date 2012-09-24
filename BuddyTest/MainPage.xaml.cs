@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Device.Location;
+using System.Diagnostics;
 using System.Windows;
 using Buddy;
 using Microsoft.Phone.Controls;
@@ -11,6 +12,8 @@ namespace BuddyTest
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        private bool setMeOnce;
+
         private LocationTracker updateLocation;
 
         public MainPage()
@@ -19,8 +22,6 @@ namespace BuddyTest
 
             this.Loaded += new RoutedEventHandler(this.MainPage_Loaded);
         }
-
-        private bool setMeOnce;
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -50,19 +51,35 @@ namespace BuddyTest
             ((App)App.Current).User.Places.FindAsync((places, callbackParams) =>
             {
                 Utilities.HandleAsyncResults(places, callbackParams, () =>
-                {
-                    this.UpdatePage(places);
-                });
+                 {
+                     this.UpdatePage(places);
+                 });
 
             }, SearchDistanceInMeters, coordinate.Latitude, coordinate.Longitude, NumberOfPlaces);
         }
 
         private void UpdatePage(List<Place> places)
         {
+#if DEBUG
+            this.DumpPlaces(places);
+#endif
+            
             this.DataContext = places;
 
             this.SetMeOnce();
         }
+
+#if DEBUG       
+        private void DumpPlaces(List<Place> places)
+        {
+            foreach (var place in places)
+            {
+                Debug.WriteLine(place.Name);
+            }
+
+            Debug.WriteLine("");
+        }
+#endif
 
         private void SetMeOnce()
         {
@@ -71,9 +88,6 @@ namespace BuddyTest
                 if (this.SetMe())
                 {
                     this.setMeOnce = false;
-
-                    // TODO: For some reason, we have to manually invalidate; otherwise, the map won't render correctly before user interaction
-                    this.Map.InvalidateMeasure();
                 }
             }
         }
@@ -96,6 +110,8 @@ namespace BuddyTest
 
             if (places != null && places.Count > 0)
             {
+                Debug.WriteLine("SetMe");
+
                 // using Linq here is concise, but, other algorithms can be faster I bet
                 var boundingRectangle = new LocationRect(
                     places.Max((p) => p.Latitude),

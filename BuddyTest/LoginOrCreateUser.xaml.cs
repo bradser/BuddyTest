@@ -24,21 +24,9 @@ namespace BuddyTest
         }
 
         private void LoginOrCreateUser_Loaded(object sender, RoutedEventArgs e)
-        {
-            //this.HandleNullClient();
-            
+        {          
             this.SetupAdditionalFields();
         }
-
-        /*private void HandleNullClient()
-        {
-            if (((App)App.Current).Client == null)
-            {
-                this.Fields.Visibility = Visibility.Collapsed;
-
-                Utilities.CrossThreadMessageBox("Network error. Please restart app.");
-            }
-        }*/
 
         private void SetupAdditionalFields()
         {

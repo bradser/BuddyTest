@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Device.Location;
 
 namespace BuddyTest
@@ -9,6 +10,10 @@ namespace BuddyTest
 
         private GeoCoordinateWatcher watcher;
 
+        private bool ready;
+
+        private GeoPositionChangedEventArgs<GeoCoordinate> latestEventArgs;
+        
         private LocationTracker(Action<GeoPositionChangedEventArgs<GeoCoordinate>> callback)
         {
             this.callback = callback;
@@ -18,6 +23,8 @@ namespace BuddyTest
 
         private void InitializeWatcher()
         {
+            this.ready = false;
+            
             this.watcher = new GeoCoordinateWatcher();
 
             const int movementInMeters = 20;
@@ -53,12 +60,34 @@ namespace BuddyTest
                     // The Location Service is working, but it cannot get location data.
                     Utilities.CrossThreadMessageBox("Location data is not available.");
                     break;
+
+                case GeoPositionStatus.Ready:
+                    Debug.WriteLine("GeoPositionStatus.Ready");
+
+                    this.ready = true;
+
+                    this.watcher_PositionChanged(this, this.latestEventArgs);
+
+                    break;
             }
         }
 
+        // watcher_PositionChanged sometimes fires twice upon GeoCoordinateWatcher.Start().
+        // To work around this, before GeoCoordinateWatcher is ready, I remember only the last GeoPositionChangedEventArgs.
+        // Once ready, I act upon that latest GeoPositionChangedEventArgs.
+        
         void watcher_PositionChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
         {
-            this.callback(e);
+            Debug.WriteLine("watcher_PositionChanged");
+
+            if (this.ready)
+            {
+                this.callback(e);
+            }
+            else
+            {
+                this.latestEventArgs = e;
+            }
         }
 
         public static LocationTracker GetInstance(Action<GeoPositionChangedEventArgs<GeoCoordinate>> callback)

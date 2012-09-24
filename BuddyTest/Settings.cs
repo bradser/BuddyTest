@@ -6,6 +6,7 @@ namespace BuddyTest
     public class Settings
     {
         private const string NameKeyName = "Name";
+
         private const string PasswordKeyName = "Password";
         
         private Settings()
